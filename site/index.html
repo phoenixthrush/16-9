@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Calculator Interface</title>
     <style>
         body {
             height: 100vh;
@@ -13,7 +13,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid red;
             box-sizing: border-box;
             user-select: none;
             -webkit-user-select: none;
@@ -23,126 +22,137 @@
         }
 
         .container {
-            height: 330px;
             width: 400px;
+            height: 330px;
+            background-color: rgb(240, 240, 240);
             display: flex;
             flex-direction: column;
-            box-sizing: border-box;
-            overflow: hidden;
-            background-color: rgb(240, 240, 240);
             padding: 0 15px 15px 15px;
+            overflow: hidden;
+            box-sizing: border-box;
         }
 
         .video-container {
             flex: 1;
             margin: 0 10px 20px 10px;
-            box-sizing: border-box;
+            background-color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #fff;
             text-align: center;
+            box-sizing: border-box;
         }
 
         .video-container video {
-            max-height: 100%;
-            max-width: 100%;
             display: none;
+            max-width: 100%;
+            max-height: 100%;
             object-fit: contain;
-            margin: 0;
         }
 
         .video-container .caption {
-            margin: 0;
             font-size: 2.5em;
             font-family: Arial, Helvetica, sans-serif;
             letter-spacing: 10px;
         }
 
         .buttons {
-            margin: 0;
             display: flex;
             justify-content: space-between;
             box-sizing: border-box;
         }
 
         .buttons button {
-            height: 70px;
-            width: 70px;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-            cursor: pointer;
+            width: 80px;
+            height: 80px;
+            font-size: 1.5rem;
             flex-shrink: 0;
-            font-size: 1.2rem;
+            cursor: pointer;
+            border: 2px solid #ccc;
+            border-radius: 0;
+            background-color: #f0f0f0;
+            box-shadow: inset -2px -2px 5px #fff, inset 2px 2px 5px #ccc;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .buttons button:hover {
+            background-color: #e0e0e0;
+        }
+
+        .buttons button:active {
+            background-color: #d0d0d0;
+            box-shadow: inset 2px 2px 5px #fff, inset -2px -2px 5px #ccc;
+        }
+
+        @media (min-width: 401px),
+        (min-height: 331px) {
+            .title-bar {
+                height: 2em;
+                background-color: #eee;
+            }
         }
     </style>
 </head>
 
-<body oncontextmenu="return false;"></body>
-<div class="container">
-    <div class="video-container">
-        <video src="assets/video/video.mp4"></video>
-        <p class="caption"></p>
+<body oncontextmenu="return false;">
+    <div class="container">
+        <div class="title-bar"></div>
+        <div class="video-container">
+            <video src="assets/video/video.mp4"></video>
+            <p class="caption"></p>
+        </div>
+        <div class="buttons">
+            <button type="button">16</button>
+            <button type="button">9</button>
+            <button type="button">-</button>
+            <button type="button">=</button>
+        </div>
     </div>
-    <div class="buttons">
-        <button type="button">16</button>
-        <button type="button">9</button>
-        <button type="button">-</button>
-        <button type="button">=</button>
-    </div>
-</div>
-<script>
-    var buttons = document.querySelectorAll('.buttons button');
-    var audioMap = {
-        '16': 'assets/audio/16.mp3',
-        '9': 'assets/audio/9.mp3',
-        '-': 'assets/audio/minus.mp3',
-        '=': 'assets/audio/equals.mp3'
-    };
+    <script>
+        (function () {
+            const buttons = document.querySelectorAll('.buttons button');
+            const audioMap = {
+                '16': 'assets/audio/16.mp3',
+                '9': 'assets/audio/9.mp3',
+                '-': 'assets/audio/minus.mp3',
+                '=': 'assets/audio/equals.mp3'
+            };
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const btnVal = button.textContent;
+                    new Audio(audioMap[btnVal]).play();
 
-    buttons.forEach(button => {
-        button.addEventListener('click', () => {
-            var audio = new Audio(audioMap[button.textContent]);
-            audio.play();
+                    const caption = document.querySelector('.video-container .caption');
+                    if (caption) caption.textContent += btnVal;
 
-            var caption = document.querySelector('.video-container .caption');
-            if (caption) {
-                caption.textContent += button.textContent;
-            }
-
-            if (button.textContent === '=') {
-                setTimeout(() => {
-                    var audio = new Audio('assets/audio/switching_to_a_human_representative.mp3');
-                    audio.play();
-                }, 1000);
-                setTimeout(() => {
-                    var video = document.querySelector('.video-container video');
-                    var caption = document.querySelector('.video-container .caption');
-                    var videoContainer = document.querySelector('.video-container');
-                    if (video) {
-                        video.style.display = 'block';
-                        video.play();
-                        video.onended = () => {
-                            video.style.display = 'none';
-                            if (caption) {
-                                caption.style.display = 'block';
-                                caption.textContent = '';
+                    if (btnVal === '=') {
+                        setTimeout(() => {
+                            new Audio('assets/audio/switching_to_a_human_representative.mp3').play();
+                        }, 1000);
+                        setTimeout(() => {
+                            const video = document.querySelector('.video-container video');
+                            const caption = document.querySelector('.video-container .caption');
+                            const videoContainer = document.querySelector('.video-container');
+                            if (video) {
+                                video.style.display = 'block';
+                                video.play();
+                                video.onended = () => {
+                                    video.style.display = 'none';
+                                    if (caption) {
+                                        caption.style.display = 'block';
+                                        caption.textContent = '';
+                                    }
+                                    videoContainer.style.backgroundColor = '#fff';
+                                };
                             }
-                            if (videoContainer) {
-                                videoContainer.style.backgroundColor = '#fff';
-                            }
-                        };
+                            if (caption) caption.style.display = 'none';
+                            videoContainer.style.backgroundColor = 'rgb(240, 240, 240)';
+                        }, 2500);
                     }
-                    if (caption) {
-                        caption.style.display = 'none';
-                    }
-                    if (videoContainer) {
-                        videoContainer.style.backgroundColor = 'rgb(240, 240, 240)';
-                    }
-                }, 2500);
-            }
-        });
-    });
-</script>
+                });
+            });
+        })();
+    </script>
 </body>
 
 </html>
