@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            height: 100vh;
+            margin: 0 auto;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid red;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            -moz-user-select: none;
+            cursor: default;
+        }
+
+        .container {
+            height: 330px;
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            overflow: hidden;
+            background-color: rgb(240, 240, 240);
+            padding: 0 15px 15px 15px;
+        }
+
+        .video-container {
+            flex: 1;
+            margin: 0 10px 20px 10px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            text-align: center;
+        }
+
+        .video-container video {
+            max-height: 100%;
+            max-width: 100%;
+            display: none;
+            object-fit: contain;
+            margin: 0;
+        }
+
+        .video-container .caption {
+            margin: 0;
+            font-size: 2.5em;
+            font-family: Arial, Helvetica, sans-serif;
+            letter-spacing: 10px;
+        }
+
+        .buttons {
+            margin: 0;
+            display: flex;
+            justify-content: space-between;
+            box-sizing: border-box;
+        }
+
+        .buttons button {
+            height: 70px;
+            width: 70px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+
+<body oncontextmenu="return false;"></body>
+<div class="container">
+    <div class="video-container">
+        <video src="assets/video/video.mp4"></video>
+        <p class="caption"></p>
+    </div>
+    <div class="buttons">
+        <button type="button">16</button>
+        <button type="button">9</button>
+        <button type="button">-</button>
+        <button type="button">=</button>
+    </div>
+</div>
+<script>
+    var buttons = document.querySelectorAll('.buttons button');
+    var audioMap = {
+        '16': 'assets/audio/16.mp3',
+        '9': 'assets/audio/9.mp3',
+        '-': 'assets/audio/minus.mp3',
+        '=': 'assets/audio/equals.mp3'
+    };
+
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            var audio = new Audio(audioMap[button.textContent]);
+            audio.play();
+
+            var caption = document.querySelector('.video-container .caption');
+            if (caption) {
+                caption.textContent += button.textContent;
+            }
+
+            if (button.textContent === '=') {
+                setTimeout(() => {
+                    var audio = new Audio('assets/audio/switching_to_a_human_representative.mp3');
+                    audio.play();
+                }, 1000);
+                setTimeout(() => {
+                    var video = document.querySelector('.video-container video');
+                    var caption = document.querySelector('.video-container .caption');
+                    var videoContainer = document.querySelector('.video-container');
+                    if (video) {
+                        video.style.display = 'block';
+                        video.play();
+                        video.onended = () => {
+                            video.style.display = 'none';
+                            if (caption) {
+                                caption.style.display = 'block';
+                                caption.textContent = '';
+                            }
+                            if (videoContainer) {
+                                videoContainer.style.backgroundColor = '#fff';
+                            }
+                        };
+                    }
+                    if (caption) {
+                        caption.style.display = 'none';
+                    }
+                    if (videoContainer) {
+                        videoContainer.style.backgroundColor = 'rgb(240, 240, 240)';
+                    }
+                }, 2500);
+            }
+        });
+    });
+</script>
+</body>
+
+</html>
